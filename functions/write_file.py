@@ -1,30 +1,25 @@
 import os
 
 
-def write_file(working_directory, file_path, content):
-
+def write_file(working_dir, file_path, content):
+    #Gets the absolute file path of the working directory
     working_dir_abs = os.path.abspath(working_dir)
-    target_dir = os.path.normpath(os.path.join(working_dir_abs, directory))
-
-    valid_target_dir = (os.path.commonpath([working_dir_abs, target_dir]) == working_dir_abs)
+    #Gets the absolute file path of the desired file in the directory and normalizes it
+    target_file = os.path.normpath(os.path.join(working_dir_abs, file_path))
+    #Checks if the absolute path of the desired file is in the working directory as a boolean
+    valid_target_dir = (os.path.commonpath([working_dir_abs, target_file]) == working_dir_abs)
     if valid_target_dir == False:
         return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
-    dicts = ""
+    elif os.path.isdir(target_file):
+        return f'Error: Cannot write to "{file_path}" as it is a directory'
+    #Just becuase the desired file path is in the working directory does not mean that all the required subdirectories exist.
+    #Makes all required subdirectories.
+    target_dir = os.path.dirname(target_file)
+    os.makedirs(target_dir, exist_ok=True)
 
-    for content in os.listdir(target_dir):
-        relative_path = os.path.join(target_dir, content)
-        abs_path = os.path.abspath(relative_path)
-
+    with open(target_file, "w") as file:
         try:
-            os.path.getsize(abs_path)
+            file.write(content)
+            return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
         except:
-            print(f"Error: Failed to get size of {abs_path}")
-        try:
-            os.path.isdir(abs_path)
-        except:
-            print(f"Error: Failed to deterimine if {abs_path} is a directory or not")
-
-        dicts = dicts + f"- {content}: file_size={os.path.getsize(abs_path)}, is_dir={os.path.isdir(abs_path)}\n"
-    return dicts
-
-
+            return f"Error: Problem writing to file at {file_path}"
