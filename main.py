@@ -2,6 +2,7 @@ import os, argparse
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from config import SYSTEM_PROMPT
 
 def main():
     print("Hello from AiAgent!")
@@ -19,7 +20,7 @@ def main():
 
     client = genai.Client(api_key = api_key)
     response = client.models.generate_content(
-        model = "gemini-2.5-flash", contents = messages
+        model = "gemini-2.5-flash", contents = messages, config = types.GenerateContentConfig(system_instruction = SYSTEM_PROMPT)
     )
     if response.usage_metadata == None:
         raise Exception("Exception: response has usage_metadata = None")
