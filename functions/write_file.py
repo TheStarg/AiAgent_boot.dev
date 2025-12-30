@@ -1,4 +1,5 @@
 import os
+from google.genai import types
 
 
 def write_file(working_dir, file_path, content):
@@ -23,3 +24,22 @@ def write_file(working_dir, file_path, content):
             return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
         except:
             return f"Error: Problem writing to file at {file_path}"
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Re-writes the contents of a file given a relative file path and working directory",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Relative path of file containing contents of interest",
+            ),
+            "content":types.Schema(
+                type=types.Type.STRING,
+                description="content to replace old file content",
+            )
+        },
+        required = ["file_path", "content"]
+    ),
+)

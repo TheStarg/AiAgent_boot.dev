@@ -1,5 +1,7 @@
 import subprocess
 import os
+from google.genai import types
+
 def run_python_file(working_dir, file_path, args=None):
     #Gets the absolute file path of the working directory
     working_dir_abs = os.path.abspath(working_dir)
@@ -22,11 +24,31 @@ def run_python_file(working_dir, file_path, args=None):
         process_return = subprocess.run(command, text=True, capture_output=True, timeout=30)
         if process_return.returncode != 0:
             return f"Process exited with return code {process_return.returncode}"
-        elif process_return.stdout == None and process_return.stdstderr == None:
+        elif process_return.stdout == None and process_return.stderr == None:
             return "No output produced"
         else:
             return f"STDOUT: {process_return.stdout}STDERR: {process_return.stderr}\n"
     except:
         return f"Error: executing Python file: {e}"
     
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Finds file in a specified directory relative to the working directory, determines if a python file, and runs as a process with provided args, default no args",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description = "Relative path of file containing contents of interest",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                description = "Aruguments for the .py file to be executed in list form (default is None)",
+                items=types.Schema(type=types.Type.STRING)
+            )
+        },
+        required=["file_path"]
+    ),
+)
+
 

@@ -1,4 +1,5 @@
 import os
+from google.genai import types
 from config import MAX_CHARS
 
 def get_file_content(working_dir, file_path):
@@ -21,4 +22,19 @@ def get_file_content(working_dir, file_path):
         except:
             return f"Error: Problem opening or reading file at {file_path}"
     return contents
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Returns the contents of a file given a relative file path and working directory",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Relative path of file containing contents of interest",
+            ),
+        },
+        required = ["file_path"]
+    ),
+)
 
